@@ -20,7 +20,11 @@
       var data;
       console.log("hitting submit button");
       data = self.get_input();
-      client.publish('/email/new', data);
+      if (data != null) {
+        client.publish('/email/new', data);
+      } else {
+        $("#publish #error").html("Bad JSON");
+      }
       return false;
     });
     return self = {
@@ -28,12 +32,17 @@
         return $("#publish #data").val(data);
       },
       get_input: function(data) {
-        return $("#publish #data").val();
+        data = $("#publish #data").val();
+        try {
+          return JSON.parse(data);
+        } catch (error) {
+          return null;
+        }
       }
     };
   };
   dashboard = function() {
-    var activity_logger, client, publisher, second_publish, subscribe_callback, which;
+    var activity_logger, client, publisher, subscribe_callback;
     client = new Faye.Client('http://localhost:8000/faye', {
       timeout: 60
     });
@@ -48,19 +57,7 @@
       return activity_logger.show_message(msg);
     };
     client.subscribe('/email/new', subscribe_callback);
-    console.log("prepping timeout");
-    which = 0;
-    second_publish = function() {
-      client.publish('/email/new', {
-        text: 'FROM BROWSER',
-        which: which
-      });
-      which += 1;
-      if (which < 5) {
-        return setTimeout(second_publish, 1000);
-      }
-    };
-    return setTimeout(second_publish, 1000);
+    return console.log("prepping timeout");
   };
   jQuery(document).ready(function() {
     return dashboard();

@@ -13,14 +13,21 @@ publish = (client) ->
   $('#publish #submit').click ->
     console.log "hitting submit button"
     data = self.get_input()
-    client.publish '/email/new', 
-      data
+    if data?
+      client.publish '/email/new', 
+        data
+    else
+      $("#publish #error").html("Bad JSON")
     false
   self = 
     set_input: (data) ->
       $("#publish #data").val(data)
     get_input: (data) ->
-      $("#publish #data").val()
+      data = $("#publish #data").val()
+      try
+        JSON.parse(data)
+      catch error
+        null
 
 dashboard = ->
   client = new Faye.Client 'http://localhost:8000/faye',
@@ -41,15 +48,6 @@ dashboard = ->
   client.subscribe '/email/new', subscribe_callback
 
   console.log("prepping timeout")
-  which = 0
-  second_publish = ->
-    client.publish '/email/new',
-      text: 'FROM BROWSER'
-      which: which
-    which += 1
-    if which < 5
-      setTimeout(second_publish, 1000)
-  setTimeout(second_publish, 1000)
 
 jQuery(document).ready ->
   dashboard()
