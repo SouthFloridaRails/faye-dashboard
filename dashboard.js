@@ -1,9 +1,19 @@
 (function() {
   var dashboard;
   dashboard = function() {
+    var client;
     console.log("starting dashboard");
     $("#dashboard").html("hello world");
-    return console.log("after setting html");
+    console.log("after setting html");
+    client = new Faye.Client('http://localhost:8000/faye', {
+      timeout: 40
+    });
+    console.log(client);
+    client.publish('/email/new', {
+      text: 'New email has arrived!',
+      inboxSize: 34
+    });
+    return console.log("after publishing");
   };
   jQuery(document).ready(function() {
     return dashboard();
