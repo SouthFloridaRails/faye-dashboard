@@ -1,13 +1,18 @@
 var http = require('http'),
     faye = require('faye');
+faye.Logging.logLevel = 'info';
 
 var bayeux = new faye.NodeAdapter({
-  mount:    '/faye',
-  timeout:  45
+  mount:    '/faye'
 });
 var serverAuth = {
   incoming: function(message, callback) {
     console.log("incoming message");
+    console.log(message);
+    callback(message);
+  },
+  outcoming: function(message, callback) {
+    console.log("outcoming message");
     console.log(message);
     callback(message);
   }
@@ -21,6 +26,6 @@ var server = http.createServer(function(request, response) {
   response.end();
 });
 
-bayeux.addExtension(serverAuth);
+// bayeux.addExtension(serverAuth);
 bayeux.attach(server);
 server.listen(8000);
