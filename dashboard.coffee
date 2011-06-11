@@ -1,13 +1,13 @@
 activity_log = ->
-  show_message: (msg) ->
-    console.log("yo", msg)
+  show_message: (message, type) ->
+    msg = JSON.stringify message 
     tr = $("<tr>")
-    td = $("<td>#{msg}</td>")
+    td = $("<td>#{type}<br />#{msg}</td>")
     console.log(td)
     tr.append(td)
     $("table#log").append(tr)
 
-publish = (client) ->
+publish = (client, activity_logger) ->
   # singleton
   console.log("attaching click")
   $('#publish #submit').click ->
@@ -16,6 +16,8 @@ publish = (client) ->
     if data?
       client.publish '/email/new', 
         data
+      activity_logger.show_message(data, 'outgoing')
+      $("#publish #error").html("")
     else
       $("#publish #error").html("Bad JSON")
     false
@@ -37,13 +39,12 @@ dashboard = ->
 
   activity_logger = activity_log()
   
-  publisher = publish(client)
+  publisher = publish(client, activity_logger)
   publisher.set_input("{}")
 
   subscribe_callback = (message) ->
     console.log("got message", message)
-    msg = JSON.stringify message 
-    activity_logger.show_message(msg)
+    activity_logger.show_message(msg, 'incoming')
 
   client.subscribe '/email/new', subscribe_callback
 

@@ -2,18 +2,18 @@
   var activity_log, dashboard, publish;
   activity_log = function() {
     return {
-      show_message: function(msg) {
-        var td, tr;
-        console.log("yo", msg);
+      show_message: function(message, type) {
+        var msg, td, tr;
+        msg = JSON.stringify(message);
         tr = $("<tr>");
-        td = $("<td>" + msg + "</td>");
+        td = $("<td>" + type + "<br />" + msg + "</td>");
         console.log(td);
         tr.append(td);
         return $("table#log").append(tr);
       }
     };
   };
-  publish = function(client) {
+  publish = function(client, activity_logger) {
     var self;
     console.log("attaching click");
     $('#publish #submit').click(function() {
@@ -22,6 +22,8 @@
       data = self.get_input();
       if (data != null) {
         client.publish('/email/new', data);
+        activity_logger.show_message(data, 'outgoing');
+        $("#publish #error").html("");
       } else {
         $("#publish #error").html("Bad JSON");
       }
@@ -48,13 +50,11 @@
     });
     console.log('subscribing');
     activity_logger = activity_log();
-    publisher = publish(client);
+    publisher = publish(client, activity_logger);
     publisher.set_input("{}");
     subscribe_callback = function(message) {
-      var msg;
       console.log("got message", message);
-      msg = JSON.stringify(message);
-      return activity_logger.show_message(msg);
+      return activity_logger.show_message(msg, 'incoming');
     };
     client.subscribe('/email/new', subscribe_callback);
     return console.log("prepping timeout");
