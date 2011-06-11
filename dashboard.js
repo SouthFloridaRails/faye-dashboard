@@ -1,5 +1,5 @@
 (function() {
-  var activity_log, dashboard;
+  var activity_log, dashboard, publish;
   activity_log = function() {
     return {
       show_message: function(msg) {
@@ -13,13 +13,34 @@
       }
     };
   };
+  publish = function(client) {
+    var self;
+    console.log("attaching click");
+    $('#publish #submit').click(function() {
+      var data;
+      console.log("hitting submit button");
+      data = self.get_input();
+      client.publish('/email/new', data);
+      return false;
+    });
+    return self = {
+      set_input: function(data) {
+        return $("#publish #data").val(data);
+      },
+      get_input: function(data) {
+        return $("#publish #data").val();
+      }
+    };
+  };
   dashboard = function() {
-    var activity_logger, client, second_publish, subscribe_callback, which;
+    var activity_logger, client, publisher, second_publish, subscribe_callback, which;
     client = new Faye.Client('http://localhost:8000/faye', {
       timeout: 60
     });
     console.log('subscribing');
     activity_logger = activity_log();
+    publisher = publish(client);
+    publisher.set_input("{}");
     subscribe_callback = function(message) {
       var msg;
       console.log("got message", message);

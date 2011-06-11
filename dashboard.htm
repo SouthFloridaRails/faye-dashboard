@@ -1,7 +1,24 @@
-<head>
-  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
-  <script type="text/javascript" src="http://localhost:8000/faye.js"> </script>
-  <script type="text/javascript" src="dashboard.js"></script>
-<head>
-<table id="log">
-</table>
+<html>
+  <head>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
+    <script type="text/javascript" src="http://localhost:8000/faye.js"> </script>
+    <script type="text/javascript" src="dashboard.js"></script>
+  </head>
+  <table>
+    <tr valign="top">
+      <td>
+        <h3>Publish</h3>
+        <form id="publish">
+          <textarea id="data" rows=10/>
+          </textarea>
+          <input type="submit" id="submit" />
+        </form>
+      </td>
+      <td>
+        <h3>Log</h3>
+        <table id="log">
+        </table>
+      </td>
+    </tr>
+  </table>
+</html>

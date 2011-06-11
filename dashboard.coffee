@@ -7,6 +7,21 @@ activity_log = ->
     tr.append(td)
     $("table#log").append(tr)
 
+publish = (client) ->
+  # singleton
+  console.log("attaching click")
+  $('#publish #submit').click ->
+    console.log "hitting submit button"
+    data = self.get_input()
+    client.publish '/email/new', 
+      data
+    false
+  self = 
+    set_input: (data) ->
+      $("#publish #data").val(data)
+    get_input: (data) ->
+      $("#publish #data").val()
+
 dashboard = ->
   client = new Faye.Client 'http://localhost:8000/faye',
     timeout: 60
@@ -14,6 +29,9 @@ dashboard = ->
   console.log('subscribing')
 
   activity_logger = activity_log()
+  
+  publisher = publish(client)
+  publisher.set_input("{}")
 
   subscribe_callback = (message) ->
     console.log("got message", message)
