@@ -1,5 +1,5 @@
 (function() {
-  var activity_log, dashboard, publish, set_up_echo;
+  var activity_log, dashboard, publish, set_up_subscribe_form;
   activity_log = function() {
     var which_msg;
     which_msg = 0;
@@ -9,22 +9,34 @@
         which_msg += 1;
         msg = JSON.stringify(message);
         tr = $("<tr>");
-        td = $("<td id=" + type + which_msg + ">" + type + "<br />" + msg + "</td>");
+        td = $("<td id=" + type + which_msg + ">" + type + " " + which_msg + "<br />" + msg + "</td>");
         console.log(td);
         tr.append(td);
-        $("table#log").append(tr);
+        $("table#log").prepend(tr);
         return which_msg;
       }
     };
   };
-  set_up_echo = function(client, channel, which_msg) {
-    var subscribe_callback, subscription;
-    subscribe_callback = function(message) {
-      console.log("got echo", which_msg);
-      $("#outgoing" + which_msg).css("background", "#44FF44");
-      return subscription.cancel();
+  set_up_subscribe_form = function(client, activity_logger) {
+    var on_subcribe;
+    on_subcribe = function() {
+      var channel, subscribe_callback;
+      try {
+        subscribe_callback = function(message) {
+          console.log("got message", message);
+          return activity_logger.show_message(message, 'incoming');
+        };
+        channel = $("#subscribe #subscribe_channel").val();
+        console.log("subscribing", channel);
+        client.subscribe(channel, subscribe_callback);
+      } catch (error) {
+        console.log("error", error);
+      }
+      return false;
     };
-    return subscription = client.subscribe(channel, subscribe_callback);
+    return $('#subscribe #submit').click(function() {
+      return on_subcribe();
+    });
   };
   publish = function(client, activity_logger) {
     var self;
@@ -37,10 +49,9 @@
         channel = $("#publish #channel").val();
         which_msg = activity_logger.show_message(data, 'outgoing');
         console.log("showing", which_msg);
-        set_up_echo(client, channel, which_msg);
-        $("#publish #error").html("");
         console.log("publishing", channel, data);
         client.publish(channel, data);
+        $("#publish #error").html("");
       } else {
         $("#publish #error").html("Bad JSON");
       }
@@ -61,7 +72,7 @@
     };
   };
   dashboard = function() {
-    var activity_logger, client, publisher, subscribe_callback;
+    var activity_logger, client, publisher;
     client = new Faye.Client('http://localhost:8000/faye', {
       timeout: 60
     });
@@ -69,12 +80,7 @@
     activity_logger = activity_log();
     publisher = publish(client, activity_logger);
     publisher.set_input("{}");
-    subscribe_callback = function(message) {
-      console.log("got message", message);
-      return activity_logger.show_message(message, 'incoming');
-    };
-    client.subscribe('/email/new', subscribe_callback);
-    return console.log("prepping timeout");
+    return set_up_subscribe_form(client, activity_logger);
   };
   jQuery(document).ready(function() {
     return dashboard();

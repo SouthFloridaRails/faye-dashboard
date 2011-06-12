@@ -4,19 +4,27 @@ activity_log = ->
     which_msg += 1
     msg = JSON.stringify message 
     tr = $("<tr>")
-    td = $("<td id=#{type}#{which_msg}>#{type}<br />#{msg}</td>")
+    td = $("<td id=#{type}#{which_msg}>#{type} #{which_msg}<br />#{msg}</td>")
     console.log(td)
     tr.append(td)
-    $("table#log").append(tr)
+    $("table#log").prepend(tr)
     which_msg
 
-set_up_echo = (client, channel, which_msg) ->
-  subscribe_callback = (message) ->
-    console.log("got echo", which_msg)
-    $("#outgoing#{which_msg}").css("background", "#44FF44")
-    subscription.cancel()
+set_up_subscribe_form = (client, activity_logger) ->
+  on_subcribe = ->
+    try
+      subscribe_callback = (message) ->
+        console.log("got message", message)
+        activity_logger.show_message(message, 'incoming')
+      channel = $("#subscribe #subscribe_channel").val()
+      console.log("subscribing", channel)
+      client.subscribe channel, subscribe_callback
+    catch error
+      console.log("error", error)
+    false
 
-  subscription = client.subscribe channel, subscribe_callback
+  $('#subscribe #submit').click ->
+    on_subcribe()
 
 publish = (client, activity_logger) ->
   # singleton
@@ -28,10 +36,9 @@ publish = (client, activity_logger) ->
       channel = $("#publish #channel").val()
       which_msg = activity_logger.show_message(data, 'outgoing')
       console.log("showing", which_msg)
-      set_up_echo(client, channel, which_msg)
-      $("#publish #error").html("")
       console.log("publishing", channel, data)
       client.publish channel, data
+      $("#publish #error").html("")
     else
       $("#publish #error").html("Bad JSON")
     false
@@ -56,13 +63,8 @@ dashboard = ->
   publisher = publish(client, activity_logger)
   publisher.set_input("{}")
 
-  subscribe_callback = (message) ->
-    console.log("got message", message)
-    activity_logger.show_message(message, 'incoming')
+  set_up_subscribe_form(client, activity_logger)
 
-  client.subscribe '/email/new', subscribe_callback
-
-  console.log("prepping timeout")
 
 jQuery(document).ready ->
   dashboard()
