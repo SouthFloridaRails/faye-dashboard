@@ -14,8 +14,8 @@ publish = (client, activity_logger) ->
     console.log "hitting submit button"
     data = self.get_input()
     if data?
-      client.publish '/email/new', 
-        data
+      channel = $("#publish #channel").val()
+      client.publish channel, data
       activity_logger.show_message(data, 'outgoing')
       $("#publish #error").html("")
     else
@@ -44,7 +44,7 @@ dashboard = ->
 
   subscribe_callback = (message) ->
     console.log("got message", message)
-    activity_logger.show_message(msg, 'incoming')
+    activity_logger.show_message(message, 'incoming')
 
   client.subscribe '/email/new', subscribe_callback
 

@@ -17,11 +17,12 @@
     var self;
     console.log("attaching click");
     $('#publish #submit').click(function() {
-      var data;
+      var channel, data;
       console.log("hitting submit button");
       data = self.get_input();
       if (data != null) {
-        client.publish('/email/new', data);
+        channel = $("#publish #channel").val();
+        client.publish(channel, data);
         activity_logger.show_message(data, 'outgoing');
         $("#publish #error").html("");
       } else {
@@ -54,7 +55,7 @@
     publisher.set_input("{}");
     subscribe_callback = function(message) {
       console.log("got message", message);
-      return activity_logger.show_message(msg, 'incoming');
+      return activity_logger.show_message(message, 'incoming');
     };
     client.subscribe('/email/new', subscribe_callback);
     return console.log("prepping timeout");
