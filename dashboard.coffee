@@ -1,11 +1,14 @@
 activity_log = ->
-  show_message: (message, type) ->
+  which_msg = 0
+  show_message: (message, type, which_msg) ->
+    which_msg += 1
     msg = JSON.stringify message 
     tr = $("<tr>")
-    td = $("<td>#{type}<br />#{msg}</td>")
+    td = $("<td id=#{type}#{which_msg}>#{type}<br />#{msg}</td>")
     console.log(td)
     tr.append(td)
     $("table#log").append(tr)
+    which_msg
 
 publish = (client, activity_logger) ->
   # singleton
@@ -15,9 +18,11 @@ publish = (client, activity_logger) ->
     data = self.get_input()
     if data?
       channel = $("#publish #channel").val()
-      client.publish channel, data
-      activity_logger.show_message(data, 'outgoing')
+      which_msg = activity_logger.show_message(data, 'outgoing')
+      $("#outgoing#{which_msg}").css("background", "green")
       $("#publish #error").html("")
+      console.log("publishing", channel, data)
+      client.publish channel, data
     else
       $("#publish #error").html("Bad JSON")
     false

@@ -1,15 +1,19 @@
 (function() {
   var activity_log, dashboard, publish;
   activity_log = function() {
+    var which_msg;
+    which_msg = 0;
     return {
-      show_message: function(message, type) {
+      show_message: function(message, type, which_msg) {
         var msg, td, tr;
+        which_msg += 1;
         msg = JSON.stringify(message);
         tr = $("<tr>");
-        td = $("<td>" + type + "<br />" + msg + "</td>");
+        td = $("<td id=" + type + which_msg + ">" + type + "<br />" + msg + "</td>");
         console.log(td);
         tr.append(td);
-        return $("table#log").append(tr);
+        $("table#log").append(tr);
+        return which_msg;
       }
     };
   };
@@ -17,14 +21,16 @@
     var self;
     console.log("attaching click");
     $('#publish #submit').click(function() {
-      var channel, data;
+      var channel, data, which_msg;
       console.log("hitting submit button");
       data = self.get_input();
       if (data != null) {
         channel = $("#publish #channel").val();
-        client.publish(channel, data);
-        activity_logger.show_message(data, 'outgoing');
+        which_msg = activity_logger.show_message(data, 'outgoing');
+        $("#outgoing" + which_msg).css("background", "green");
         $("#publish #error").html("");
+        console.log("publishing", channel, data);
+        client.publish(channel, data);
       } else {
         $("#publish #error").html("Bad JSON");
       }
