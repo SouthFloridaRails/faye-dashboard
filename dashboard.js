@@ -1,10 +1,10 @@
 (function() {
-  var activity_log, dashboard, publish;
+  var activity_log, dashboard, publish, set_up_echo;
   activity_log = function() {
     var which_msg;
     which_msg = 0;
     return {
-      show_message: function(message, type, which_msg) {
+      show_message: function(message, type) {
         var msg, td, tr;
         which_msg += 1;
         msg = JSON.stringify(message);
@@ -17,6 +17,15 @@
       }
     };
   };
+  set_up_echo = function(client, channel, which_msg) {
+    var subscribe_callback, subscription;
+    subscribe_callback = function(message) {
+      console.log("got echo", which_msg);
+      $("#outgoing" + which_msg).css("background", "#44FF44");
+      return subscription.cancel();
+    };
+    return subscription = client.subscribe(channel, subscribe_callback);
+  };
   publish = function(client, activity_logger) {
     var self;
     console.log("attaching click");
@@ -27,7 +36,8 @@
       if (data != null) {
         channel = $("#publish #channel").val();
         which_msg = activity_logger.show_message(data, 'outgoing');
-        $("#outgoing" + which_msg).css("background", "green");
+        console.log("showing", which_msg);
+        set_up_echo(client, channel, which_msg);
         $("#publish #error").html("");
         console.log("publishing", channel, data);
         client.publish(channel, data);

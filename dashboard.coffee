@@ -1,6 +1,6 @@
 activity_log = ->
   which_msg = 0
-  show_message: (message, type, which_msg) ->
+  show_message: (message, type) ->
     which_msg += 1
     msg = JSON.stringify message 
     tr = $("<tr>")
@@ -9,6 +9,14 @@ activity_log = ->
     tr.append(td)
     $("table#log").append(tr)
     which_msg
+
+set_up_echo = (client, channel, which_msg) ->
+  subscribe_callback = (message) ->
+    console.log("got echo", which_msg)
+    $("#outgoing#{which_msg}").css("background", "#44FF44")
+    subscription.cancel()
+
+  subscription = client.subscribe channel, subscribe_callback
 
 publish = (client, activity_logger) ->
   # singleton
@@ -19,7 +27,8 @@ publish = (client, activity_logger) ->
     if data?
       channel = $("#publish #channel").val()
       which_msg = activity_logger.show_message(data, 'outgoing')
-      $("#outgoing#{which_msg}").css("background", "green")
+      console.log("showing", which_msg)
+      set_up_echo(client, channel, which_msg)
       $("#publish #error").html("")
       console.log("publishing", channel, data)
       client.publish channel, data
