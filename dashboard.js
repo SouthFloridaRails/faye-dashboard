@@ -4,7 +4,7 @@
     var which_msg;
     which_msg = 0;
     return {
-      show_message: function(message, type) {
+      show_message: function(message, type, subscription) {
         var msg, td, tr;
         which_msg += 1;
         msg = JSON.stringify(message);
@@ -13,6 +13,10 @@
         tr.append(td);
         td = $("<td>" + msg + "</td>");
         tr.append(td);
+        if (subscription) {
+          td = $("<td>" + subscription + "</td>");
+          tr.append(td);
+        }
         $("table#log").prepend(tr);
         return which_msg;
       }
@@ -22,19 +26,24 @@
     var on_subcribe, which_subscription;
     which_subscription = 0;
     on_subcribe = function() {
-      var channel, subscribe_callback, td, tr;
+      var channel, subscribe_callback, subscription_label, td, tr;
       try {
-        subscribe_callback = function(message) {
-          console.log("got message", message);
-          return activity_logger.show_message(message, 'incoming');
-        };
-        channel = $("#subscribe #subscribe_channel").val();
-        console.log("subscribing", channel);
         which_subscription += 1;
+        channel = $("#subscribe #subscribe_channel").val();
+        subscription_label = "" + which_subscription + " " + channel;
+        subscribe_callback = function(message) {
+          var my_subscription;
+          console.log("got message", message);
+          my_subscription = subscription_label;
+          return activity_logger.show_message(message, 'incoming', my_subscription);
+        };
+        console.log("subscribing", channel);
         client.subscribe(channel, subscribe_callback);
         tr = $("<tr>");
         td = $("<td id=subscription" + which_subscription + ">");
-        td.append("subscription " + which_subscription + "<br />" + channel);
+        td.append(which_subscription);
+        tr.append(td);
+        td = $("<td>" + channel + "</td>");
         tr.append(td);
         $("#subscriptions table").prepend(tr);
       } catch (error) {
@@ -55,7 +64,7 @@
       data = self.get_input();
       if (data != null) {
         channel = $("#publish #channel").val();
-        which_msg = activity_logger.show_message(data, 'outgoing');
+        which_msg = activity_logger.show_message(data, 'outgoing', null);
         console.log("showing", which_msg);
         console.log("publishing", channel, data);
         client.publish(channel, data);
