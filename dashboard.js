@@ -9,7 +9,9 @@
         which_msg += 1;
         msg = JSON.stringify(message);
         tr = $("<tr>");
-        td = $("<td id=" + type + which_msg + ">" + type + " " + which_msg + "<br />" + msg + "</td>");
+        td = $("<td>(" + which_msg + ") " + type + "</td>");
+        tr.append(td);
+        td = $("<td>" + msg + "</td>");
         tr.append(td);
         $("table#log").prepend(tr);
         return which_msg;
