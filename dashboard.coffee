@@ -2,6 +2,7 @@ activity_log = ->
   which_msg = 0
   show_message: (message, type, subscription) ->
     which_msg += 1
+    # return if which_msg > 500
     msg = JSON.stringify message 
     tr = $('<tr valign="top">')
     td = $("<td>(#{which_msg}) #{type}</td>")
@@ -80,13 +81,23 @@ publish = (client, activity_logger) ->
         null
 
 dashboard = ->
-  client = new Faye.Client 'http://localhost:8000/faye',
+  port = 9292 
+  client = new Faye.Client 'http://localhost:#{port}/faye',
     timeout: 60
-
-  console.log('subscribing')
+  console.log(client)
 
   activity_logger = activity_log()
-  
+
+  incoming_handler = (message, callback) ->
+    if message.channel == "/meta/connect"
+      msg = "connection status #{message.successful}"
+      $("#connection").html(msg)
+      activity_logger.show_message(message, "meta")
+    callback(message) 
+
+  client.addExtension
+    incoming: incoming_handler
+
   publisher = publish(client, activity_logger)
   publisher.set_input("{}")
 

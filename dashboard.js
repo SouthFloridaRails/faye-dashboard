@@ -103,12 +103,25 @@
     };
   };
   dashboard = function() {
-    var activity_logger, client, publisher;
-    client = new Faye.Client('http://localhost:8000/faye', {
+    var activity_logger, client, incoming_handler, port, publisher;
+    port = 9292;
+    client = new Faye.Client('http://localhost:#{port}/faye', {
       timeout: 60
     });
-    console.log('subscribing');
+    console.log(client);
     activity_logger = activity_log();
+    incoming_handler = function(message, callback) {
+      var msg;
+      if (message.channel === "/meta/connect") {
+        msg = "connection status " + message.successful;
+        $("#connection").html(msg);
+        activity_logger.show_message(message, "meta");
+      }
+      return callback(message);
+    };
+    client.addExtension({
+      incoming: incoming_handler
+    });
     publisher = publish(client, activity_logger);
     publisher.set_input("{}");
     return set_up_subscribe_form(client, activity_logger);
