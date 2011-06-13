@@ -3,11 +3,11 @@ activity_log = ->
   show_message: (message, type, subscription) ->
     which_msg += 1
     # return if which_msg > 500
-    msg = JSON.stringify message 
+    msg = JSON.stringify message, null, 4
     tr = $('<tr valign="top">')
     td = $("<td>(#{which_msg}) #{type}</td>")
     tr.append(td)
-    td = $("<td>#{msg}</td>")
+    td = $("<td><pre>#{msg}</pre></td>")
     tr.append(td)
     if (subscription)
       td = $("<td>#{subscription}</td>")
@@ -82,7 +82,7 @@ publish = (client, activity_logger) ->
 
 dashboard = ->
   port = 9292 
-  client = new Faye.Client 'http://localhost:#{port}/faye',
+  client = new Faye.Client "http://localhost:#{port}/faye",
     timeout: 60
   console.log(client)
 

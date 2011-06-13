@@ -7,11 +7,11 @@
       show_message: function(message, type, subscription) {
         var msg, td, tr;
         which_msg += 1;
-        msg = JSON.stringify(message);
+        msg = JSON.stringify(message, null, 4);
         tr = $('<tr valign="top">');
         td = $("<td>(" + which_msg + ") " + type + "</td>");
         tr.append(td);
-        td = $("<td>" + msg + "</td>");
+        td = $("<td><pre>" + msg + "</pre></td>");
         tr.append(td);
         if (subscription) {
           td = $("<td>" + subscription + "</td>");
@@ -105,7 +105,7 @@
   dashboard = function() {
     var activity_logger, client, incoming_handler, port, publisher;
     port = 9292;
-    client = new Faye.Client('http://localhost:#{port}/faye', {
+    client = new Faye.Client("http://localhost:" + port + "/faye", {
       timeout: 60
     });
     console.log(client);
