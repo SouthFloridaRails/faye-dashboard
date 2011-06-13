@@ -44,7 +44,7 @@
         tr.append(td);
         td = $("<td>" + channel + "</td>");
         tr.append(td);
-        form = $("<form>");
+        form = $("<form id='cancel_subscribe'>");
         button = $("<input type='submit' value='cancel' />");
         form.append(button);
         td = $("<td>");
@@ -57,21 +57,20 @@
             return false;
           };
         };
-        button.click(cancel(subscription, tr));
+        form.submit(cancel(subscription, tr));
         $("#subscriptions table").prepend(tr);
       } catch (error) {
         console.log("error", error);
       }
       return false;
     };
-    return $('#subscribe #submit').click(function() {
+    return $('form#subscribe').click(function() {
       return on_subcribe();
     });
   };
   publish = function(client, activity_logger) {
     var self;
-    console.log("attaching click");
-    $('#publish #submit').click(function() {
+    $('form#publish').submit(function() {
       var channel, data, which_msg;
       console.log("hitting submit button");
       data = self.get_input();

@@ -34,7 +34,7 @@ set_up_subscribe_form = (client, activity_logger) ->
       tr.append(td)
       td = $("<td>#{channel}</td>")
       tr.append(td)
-      form = $("<form>")
+      form = $("<form id='cancel_subscribe'>")
       button = $("<input type='submit' value='cancel' />")
       form.append(button)
       td = $("<td>")
@@ -45,19 +45,18 @@ set_up_subscribe_form = (client, activity_logger) ->
           subscription.cancel()
           tr.hide()
           false
-      button.click(cancel(subscription, tr))
+      form.submit(cancel(subscription, tr))
       $("#subscriptions table").prepend(tr)
     catch error
       console.log("error", error)
     false
 
-  $('#subscribe #submit').click ->
+  $('form#subscribe').click ->
     on_subcribe()
 
 publish = (client, activity_logger) ->
   # singleton
-  console.log("attaching click")
-  $('#publish #submit').click ->
+  $('form#publish').submit ->
     console.log "hitting submit button"
     data = self.get_input()
     if data?
