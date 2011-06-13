@@ -8,7 +8,7 @@
         var msg, td, tr;
         which_msg += 1;
         msg = JSON.stringify(message);
-        tr = $("<tr>");
+        tr = $('<tr valign="top">');
         td = $("<td>(" + which_msg + ") " + type + "</td>");
         tr.append(td);
         td = $("<td>" + msg + "</td>");
@@ -26,7 +26,7 @@
     var on_subcribe, which_subscription;
     which_subscription = 0;
     on_subcribe = function() {
-      var channel, subscribe_callback, subscription_label, td, tr;
+      var button, cancel, channel, form, subscribe_callback, subscription, subscription_label, td, tr;
       try {
         which_subscription += 1;
         channel = $("#subscribe #subscribe_channel").val();
@@ -38,13 +38,27 @@
           return activity_logger.show_message(message, 'incoming', my_subscription);
         };
         console.log("subscribing", channel);
-        client.subscribe(channel, subscribe_callback);
-        tr = $("<tr>");
+        subscription = client.subscribe(channel, subscribe_callback);
+        tr = $('<tr valign="top">');
         td = $("<td id=subscription" + which_subscription + ">");
         td.append(which_subscription);
         tr.append(td);
         td = $("<td>" + channel + "</td>");
         tr.append(td);
+        form = $("<form>");
+        button = $("<input type='submit' value='cancel' />");
+        form.append(button);
+        td = $("<td>");
+        td.append(form);
+        tr.append(td);
+        cancel = function(subscription, tr) {
+          return function() {
+            subscription.cancel();
+            tr.hide();
+            return false;
+          };
+        };
+        button.click(cancel(subscription, tr));
         $("#subscriptions table").prepend(tr);
       } catch (error) {
         console.log("error", error);

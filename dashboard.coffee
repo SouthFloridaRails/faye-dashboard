@@ -3,7 +3,7 @@ activity_log = ->
   show_message: (message, type, subscription) ->
     which_msg += 1
     msg = JSON.stringify message 
-    tr = $("<tr>")
+    tr = $('<tr valign="top">')
     td = $("<td>(#{which_msg}) #{type}</td>")
     tr.append(td)
     td = $("<td>#{msg}</td>")
@@ -26,13 +26,25 @@ set_up_subscribe_form = (client, activity_logger) ->
         my_subscription = subscription_label
         activity_logger.show_message(message, 'incoming', my_subscription)
       console.log("subscribing", channel)
-      client.subscribe channel, subscribe_callback
-      tr = $("<tr>")
+      subscription = client.subscribe channel, subscribe_callback
+      tr = $('<tr valign="top">')
       td = $("<td id=subscription#{which_subscription}>")
       td.append(which_subscription)
       tr.append(td)
       td = $("<td>#{channel}</td>")
       tr.append(td)
+      form = $("<form>")
+      button = $("<input type='submit' value='cancel' />")
+      form.append(button)
+      td = $("<td>")
+      td.append(form)
+      tr.append(td)
+      cancel = (subscription, tr) ->
+        ->
+          subscription.cancel()
+          tr.hide()
+          false
+      button.click(cancel(subscription, tr))
       $("#subscriptions table").prepend(tr)
     catch error
       console.log("error", error)
