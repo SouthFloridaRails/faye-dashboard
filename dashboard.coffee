@@ -11,6 +11,7 @@ activity_log = ->
     which_msg
 
 set_up_subscribe_form = (client, activity_logger) ->
+  which_subscription = 0
   on_subcribe = ->
     try
       subscribe_callback = (message) ->
@@ -18,7 +19,13 @@ set_up_subscribe_form = (client, activity_logger) ->
         activity_logger.show_message(message, 'incoming')
       channel = $("#subscribe #subscribe_channel").val()
       console.log("subscribing", channel)
+      which_subscription += 1
       client.subscribe channel, subscribe_callback
+      tr = $("<tr>")
+      td = $("<td id=subscription#{which_subscription}>")
+      td.append("subscription #{which_subscription}<br />#{channel}")
+      tr.append(td)
+      $("#subscriptions table").prepend(tr)
     catch error
       console.log("error", error)
     false

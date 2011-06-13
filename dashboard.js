@@ -10,7 +10,6 @@
         msg = JSON.stringify(message);
         tr = $("<tr>");
         td = $("<td id=" + type + which_msg + ">" + type + " " + which_msg + "<br />" + msg + "</td>");
-        console.log(td);
         tr.append(td);
         $("table#log").prepend(tr);
         return which_msg;
@@ -18,9 +17,10 @@
     };
   };
   set_up_subscribe_form = function(client, activity_logger) {
-    var on_subcribe;
+    var on_subcribe, which_subscription;
+    which_subscription = 0;
     on_subcribe = function() {
-      var channel, subscribe_callback;
+      var channel, subscribe_callback, td, tr;
       try {
         subscribe_callback = function(message) {
           console.log("got message", message);
@@ -28,7 +28,13 @@
         };
         channel = $("#subscribe #subscribe_channel").val();
         console.log("subscribing", channel);
+        which_subscription += 1;
         client.subscribe(channel, subscribe_callback);
+        tr = $("<tr>");
+        td = $("<td id=subscription" + which_subscription + ">");
+        td.append("subscription " + which_subscription + "<br />" + channel);
+        tr.append(td);
+        $("#subscriptions table").prepend(tr);
       } catch (error) {
         console.log("error", error);
       }
