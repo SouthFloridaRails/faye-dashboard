@@ -5,7 +5,7 @@ activity_log = ->
     msg = JSON.stringify message 
     tr = $("<tr>")
     td = $("<td id=#{type}#{which_msg}>#{type} #{which_msg}<br />#{msg}</td>")
-    console.log(td)
+    # console.log(td)
     tr.append(td)
     $("table#log").prepend(tr)
     which_msg
