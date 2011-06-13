@@ -11,12 +11,11 @@
         tr = $('<tr valign="top">');
         td = $("<td>(" + which_msg + ") " + type + "</td>");
         tr.append(td);
+        subscription || (subscription = '&nbsp;');
+        td = $("<td>" + subscription + "</td>");
+        tr.append(td);
         td = $("<td><pre>" + msg + "</pre></td>");
         tr.append(td);
-        if (subscription) {
-          td = $("<td>" + subscription + "</td>");
-          tr.append(td);
-        }
         $("table#log").prepend(tr);
         return which_msg;
       }
@@ -111,12 +110,23 @@
     console.log(client);
     activity_logger = activity_log();
     incoming_handler = function(message, callback) {
-      var msg;
+      var extras, key, msg;
       if (message.channel === "/meta/connect") {
         msg = "connection status " + message.successful;
         $("#connection").html(msg);
         activity_logger.show_message(message, "meta");
+      } else {
+        if (message.data) {
+          extras = {};
+          for (key in message) {
+            if (key !== 'data') {
+              extras[key] = message[key];
+            }
+          }
+          message.data.__parent_data__ = extras;
+        }
       }
+      console.log(message);
       return callback(message);
     };
     client.addExtension({

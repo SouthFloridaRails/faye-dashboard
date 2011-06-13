@@ -7,11 +7,11 @@ activity_log = ->
     tr = $('<tr valign="top">')
     td = $("<td>(#{which_msg}) #{type}</td>")
     tr.append(td)
+    subscription ||= '&nbsp;'
+    td = $("<td>#{subscription}</td>")
+    tr.append(td)
     td = $("<td><pre>#{msg}</pre></td>")
     tr.append(td)
-    if (subscription)
-      td = $("<td>#{subscription}</td>")
-      tr.append(td)
     $("table#log").prepend(tr)
     which_msg
 
@@ -81,7 +81,7 @@ publish = (client, activity_logger) ->
         null
 
 dashboard = ->
-  port = 9292
+  port = 9292 # XXX: hard coded
   client = new Faye.Client "http://localhost:#{port}/faye",
     timeout: 60
   console.log(client)
@@ -92,8 +92,16 @@ dashboard = ->
     if message.channel == "/meta/connect"
       msg = "connection status #{message.successful}"
       $("#connection").html(msg)
-      # console.log(message)
       activity_logger.show_message(message, "meta")
+    else
+      if message.data
+        extras = {}
+        for key of message
+          if key != 'data'
+            extras[key] = message[key]
+        message.data.__parent_data__ = extras
+
+    console.log(message)
     callback(message) 
 
   client.addExtension
