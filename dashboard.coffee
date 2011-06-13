@@ -81,7 +81,7 @@ publish = (client, activity_logger) ->
         null
 
 dashboard = ->
-  port = 9292 
+  port = 9292
   client = new Faye.Client "http://localhost:#{port}/faye",
     timeout: 60
   console.log(client)
@@ -92,6 +92,7 @@ dashboard = ->
     if message.channel == "/meta/connect"
       msg = "connection status #{message.successful}"
       $("#connection").html(msg)
+      # console.log(message)
       activity_logger.show_message(message, "meta")
     callback(message) 
 
