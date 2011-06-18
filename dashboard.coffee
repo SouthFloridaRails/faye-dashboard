@@ -87,7 +87,9 @@ publish = (client, activity_logger) ->
 dashboard = ->
   port = 9292 # XXX: hard coded
   try
-    client = new Faye.Client "http://localhost:#{port}/faye",
+    url = "http://localhost:#{port}/faye"
+    $("#connection").prepend(url + "<br />")
+    client = new Faye.Client url,
       timeout: 60
   catch error
     alert("Faye does not appear to be running")

@@ -1,6 +1,13 @@
-This is still a work in progress.
+This a browser-based dashboard for interacting with a Faye server.  The goal is to make Faye-based applications easy to debug.  As a side benefit, the application can be a nice template for the client piece of your first Faye application.
 
-The goal is to build a browser-based dashboard for interacting with a Faye server.
+Here is how to use it:
+
+  1) git clone the repository for this project
+  2) install the Faye server (and any dependencies).
+  3) Modify dashboard.htm and dashboard.js so that they point to your server.  (Look for "localhost" and "9292".)
+  4) If you don't have your own server, then you can use server.js in this codebase.  Install node.js, then run "node server.js".  You may want to modify the port.
+  5) Open dashboard.htm in the browser.
+  6) The GUI should be mostly self-evident.  You can subscribe to channels and publish messages.  You'll then see activity in the log.
 
 KNOWN ISSUES:
-  1. Firefox 3.6 does not work for some reason.  It can publish, but not get incoming messages.  Testing on Safari.
+  1. Firefox 3.6 does not work for some reason.  It can publish, but not get incoming messages.  The program works fine on Chrome and Safari.  It also works on FF 4.

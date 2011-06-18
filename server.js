@@ -28,4 +28,4 @@ var server = http.createServer(function(request, response) {
 
 // bayeux.addExtension(serverAuth);
 bayeux.attach(server);
-server.listen(8000);
+server.listen(9292);

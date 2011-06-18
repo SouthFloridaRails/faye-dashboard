@@ -106,10 +106,12 @@
     };
   };
   dashboard = function() {
-    var activity_logger, client, incoming_handler, port, publisher;
+    var activity_logger, client, incoming_handler, port, publisher, url;
     port = 9292;
     try {
-      client = new Faye.Client("http://localhost:" + port + "/faye", {
+      url = "http://localhost:" + port + "/faye";
+      $("#connection").prepend(url + "<br />");
+      client = new Faye.Client(url, {
         timeout: 60
       });
     } catch (error) {
