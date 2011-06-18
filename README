@@ -11,3 +11,4 @@ Here is how to use it:
 
 KNOWN ISSUES:
   1. Firefox 3.6 does not work for some reason.  It can publish, but not get incoming messages.  The program works fine on Chrome and Safari.  It also works on FF 4.
+  2. Do not subscribe to "/**" or the "/meta" channel.
