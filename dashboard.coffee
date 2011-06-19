@@ -90,9 +90,6 @@ dashboard = ->
     alert("Faye does not appear to be running")
     throw error
 
-  Faye.Logging.logLevel = 'debug'
-  Faye.logger = (m) -> console.log(m)
-
   activity_logger = activity_log()
 
   incoming_handler = (message, callback) ->
