@@ -44,10 +44,8 @@
       which_subscription += 1;
       channel = $("#subscribe #subscribe_channel").val();
       subscribe_callback = function(message) {
-        console.log("got message", message);
         return activity_logger.show_message(message, 'incoming');
       };
-      console.log("subscribing", channel);
       subscription = client.subscribe(channel, subscribe_callback);
       tr = $('<tr valign="top">');
       td = $("<td id=subscription" + which_subscription + ">");
@@ -77,13 +75,10 @@
     var self;
     $('form#publish').submit(function() {
       var channel, data, which_msg;
-      console.log("hitting submit button");
       data = self.get_input();
       if (data != null) {
         channel = $("#publish #channel").val();
         which_msg = activity_logger.show_message(data, 'outgoing', channel);
-        console.log("showing", which_msg);
-        console.log("publishing", channel, data);
         client.publish(channel, data);
         $("#publish #error").html("");
       } else {
@@ -118,7 +113,10 @@
       alert("Faye does not appear to be running");
       throw error;
     }
-    console.log(client);
+    Faye.Logging.logLevel = 'debug';
+    Faye.logger = function(m) {
+      return console.log(m);
+    };
     activity_logger = activity_log();
     incoming_handler = function(message, callback) {
       var extras, key, msg;
@@ -136,7 +134,6 @@
           message.data.__parent_data__ = extras;
         }
       }
-      console.log(message);
       return callback(message);
     };
     client.addExtension({

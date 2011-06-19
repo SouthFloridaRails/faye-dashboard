@@ -1,14 +1,18 @@
-This a browser-based dashboard for interacting with a Faye server.  The goal is to make Faye-based applications easy to debug.  As a side benefit, the application can be a nice template for the client piece of your first Faye application.
+This a browser-based dashboard for interacting with a Faye server.  The goal is to make Faye-based applications easy to debug.
 
-Here is how to use it:
+FEATURES:
+  1) Subscribe to channels with the push of a button.  Unsubscribe them as needed.
+  2) Publish to channels by entering data in a textarea and pushing a button.
+  3) All incoming/outgoing messages will be shown in the log.
 
-  1) git clone the repository for this project
-  2) install the Faye server (and any dependencies).
-  3) Modify dashboard.htm and dashboard.js so that they point to your server.  (Look for "localhost" and "9292".)
-  4) If you don't have your own server, then you can use server.js in this codebase.  Install node.js, then run "node server.js".  You may want to modify the port.
-  5) Open dashboard.htm in the browser.
+INSTRUCTIONS:
+
+  1) Download the repository for this project (git clone).
+  2) Install Faye (and any dependencies).
+  3) Modify dashboard.htm and dashboard.js so that they point to your Faye server.  (Look for "localhost" and "9292".)
+  4) Start your Faye server.  If you don't have your own Faye server, then you can use server.js in this codebase.  Install node.js, then run "node server.js".  You may want to modify the port.
+  5) Open dashboard.htm in the browser.  To avoid strange AJAX-related issues in some versions of Firefox, I recommend serving them from your web server of choice.
   6) The GUI should be mostly self-evident.  You can subscribe to channels and publish messages.  You'll then see activity in the log.
 
 KNOWN ISSUES:
-  1. Firefox 3.6 does not work for some reason.  It can publish, but not get incoming messages.  The program works fine on Chrome and Safari.  It also works on FF 4.
-  2. Do not subscribe to "/**" or the "/meta" channel.
+  1. Do not subscribe to "/**" or the "/meta/connect" channel.  This is more of an issue with Faye itself than the tool, and I believe there are plans to fix it soon in Faye.

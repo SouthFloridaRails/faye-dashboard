@@ -33,9 +33,7 @@ set_up_subscribe_form = (client, activity_logger) ->
     which_subscription += 1
     channel = $("#subscribe #subscribe_channel").val()
     subscribe_callback = (message) ->
-      console.log("got message", message)
       activity_logger.show_message(message, 'incoming')
-    console.log("subscribing", channel)
     subscription = client.subscribe channel, subscribe_callback
     tr = $('<tr valign="top">')
     td = $("<td id=subscription#{which_subscription}>")
@@ -62,13 +60,10 @@ set_up_subscribe_form = (client, activity_logger) ->
 publish = (client, activity_logger) ->
   # singleton
   $('form#publish').submit ->
-    console.log "hitting submit button"
     data = self.get_input()
     if data?
       channel = $("#publish #channel").val()
       which_msg = activity_logger.show_message(data, 'outgoing', channel)
-      console.log("showing", which_msg)
-      console.log("publishing", channel, data)
       client.publish channel, data
       $("#publish #error").html("")
     else
@@ -94,7 +89,9 @@ dashboard = ->
   catch error
     alert("Faye does not appear to be running")
     throw error
-  console.log(client)
+
+  Faye.Logging.logLevel = 'debug'
+  Faye.logger = (m) -> console.log(m)
 
   activity_logger = activity_log()
 
@@ -111,7 +108,6 @@ dashboard = ->
             extras[key] = message[key]
         message.data.__parent_data__ = extras
 
-    console.log(message)
     callback(message) 
 
   client.addExtension({incoming: incoming_handler})
