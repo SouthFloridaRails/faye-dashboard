@@ -54,7 +54,7 @@
     var on_subcribe, which_subscription;
     which_subscription = 0;
     on_subcribe = function(evt) {
-      var cancel_form, channel, form, subscribe_callback, subscription, td, tr;
+      var cancel_form, cell, cells, channel, subscribe_callback, subscription, subscription_tr, tr, _i, _len, _results;
       evt.preventDefault();
       which_subscription += 1;
       channel = $("#subscribe #subscribe_channel").val();
@@ -77,17 +77,20 @@
         form.submit(cancel(subscription, tr));
         return form;
       };
-      tr = $('<tr valign="top">');
-      td = $("<td id=subscription" + which_subscription + ">");
-      td.append(which_subscription);
-      tr.append(td);
-      td = $("<td>" + channel + "</td>");
-      tr.append(td);
-      td = $("<td>");
-      form = cancel_form(tr);
-      td.append(form);
-      tr.append(td);
-      return $("#subscriptions table").prepend(tr);
+      subscription_tr = function() {
+        var tr;
+        tr = $('<tr valign="top">');
+        $("#subscriptions table").prepend(tr);
+        return tr;
+      };
+      tr = subscription_tr();
+      cells = [$("<td id=subscription" + which_subscription + ">" + which_subscription + "</td>"), $("<td>" + channel + "</td>"), $("<td>").append(cancel_form(tr))];
+      _results = [];
+      for (_i = 0, _len = cells.length; _i < _len; _i++) {
+        cell = cells[_i];
+        _results.push(tr.append(cell));
+      }
+      return _results;
     };
     return $('form#subscribe').submit(on_subcribe);
   };

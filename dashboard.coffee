@@ -61,19 +61,21 @@ set_up_subscribe_form = (client, activity_logger) ->
           tr.hide()
       form.submit(cancel(subscription, tr))
       form
-        
-    tr = $('<tr valign="top">')
-    td = $("<td id=subscription#{which_subscription}>")
-    td.append(which_subscription)
-    tr.append(td)
-    td = $("<td>#{channel}</td>")
-    tr.append(td)
-    td = $("<td>")
-    form = cancel_form(tr)
-    td.append(form)
-    tr.append(td)
-    $("#subscriptions table").prepend(tr)
-
+    
+    subscription_tr = ->
+      tr = $('<tr valign="top">')
+      $("#subscriptions table").prepend(tr)
+      tr
+    
+    tr = subscription_tr()
+    
+    cells = [
+      $("<td id=subscription#{which_subscription}>#{which_subscription}</td>"),
+      $("<td>#{channel}</td>"),
+      $("<td>").append cancel_form(tr)
+    ]
+    for cell in cells
+      tr.append(cell)  
   $('form#subscribe').submit(on_subcribe)
 
 publish = (client, activity_logger) ->
