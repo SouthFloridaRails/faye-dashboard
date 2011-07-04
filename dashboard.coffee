@@ -22,20 +22,19 @@ activity_log = ->
       td = $("<td><pre>#{msg}</pre></td>")
       tr.append(td)
 
-    parent_data = null
-    if message.__parent_data__
-        parent_data = message.__parent_data__
-        message.__parent_data__ = undefined
-        channel = parent_data.channel
+    metadata = null
+    if message.metadata
+        metadata = message.metadata
+        message = message.payload
+        channel = metadata.channel
               
     tr = log_row()
-
     show_channel(channel)
     show_which_msg()
       
     show_json(message)
-    if parent_data
-      show_json(parent_data)
+    if metadata
+      show_json(metadata)
 
     which_msg
 
@@ -106,19 +105,25 @@ dashboard = ->
   activity_logger = activity_log()
 
   incoming_handler = (message, callback) ->
+    # return callback(message)
     if message.channel == "/meta/connect"
       msg = "connection status #{message.successful}"
       $("#connection").html(msg)
-      # activity_logger.show_message(message, "meta")
+      callback(message)
+    else if message.channel.match(/\/meta.*/)
+      # This is ugly, I wish meta messages were
+      # covered under a different extension.
+      callback(message)
     else
       if message.data
-        extras = {}
+        metadata = {}
         for key of message
           if key != 'data'
-            extras[key] = message[key]
-        message.data.__parent_data__ = extras
-
-    callback(message) 
+            metadata[key] = message[key]
+        message.data =
+          payload: message.data
+          metadata: metadata
+      callback(message) 
 
   client.addExtension({incoming: incoming_handler})
 
