@@ -54,7 +54,7 @@
     var on_subcribe, which_subscription;
     which_subscription = 0;
     on_subcribe = function(evt) {
-      var button, cancel, channel, form, subscribe_callback, subscription, td, tr;
+      var cancel_form, channel, form, subscribe_callback, subscription, td, tr;
       evt.preventDefault();
       which_subscription += 1;
       channel = $("#subscribe #subscribe_channel").val();
@@ -62,26 +62,31 @@
         return activity_logger.show_message(message, 'incoming');
       };
       subscription = client.subscribe(channel, subscribe_callback);
+      cancel_form = function(tr) {
+        var button, cancel, form;
+        form = $("<form id='cancel_subscribe'>");
+        button = $("<input type='submit' value='cancel' />");
+        form.append(button);
+        cancel = function(subscription, tr) {
+          return function(evt) {
+            evt.preventDefault();
+            subscription.cancel();
+            return tr.hide();
+          };
+        };
+        form.submit(cancel(subscription, tr));
+        return form;
+      };
       tr = $('<tr valign="top">');
       td = $("<td id=subscription" + which_subscription + ">");
       td.append(which_subscription);
       tr.append(td);
       td = $("<td>" + channel + "</td>");
       tr.append(td);
-      form = $("<form id='cancel_subscribe'>");
-      button = $("<input type='submit' value='cancel' />");
-      form.append(button);
       td = $("<td>");
+      form = cancel_form(tr);
       td.append(form);
       tr.append(td);
-      cancel = function(subscription, tr) {
-        return function(evt) {
-          evt.preventDefault();
-          subscription.cancel();
-          return tr.hide();
-        };
-      };
-      form.submit(cancel(subscription, tr));
       return $("#subscriptions table").prepend(tr);
     };
     return $('form#subscribe').submit(on_subcribe);

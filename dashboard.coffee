@@ -44,27 +44,34 @@ set_up_subscribe_form = (client, activity_logger) ->
     evt.preventDefault()
     which_subscription += 1
     channel = $("#subscribe #subscribe_channel").val()
+
     subscribe_callback = (message) ->
       activity_logger.show_message(message, 'incoming')
+
     subscription = client.subscribe channel, subscribe_callback
+
+    cancel_form = (tr) ->
+      form = $("<form id='cancel_subscribe'>")
+      button = $("<input type='submit' value='cancel' />")
+      form.append(button)
+      cancel = (subscription, tr) ->
+        (evt) ->
+          evt.preventDefault()
+          subscription.cancel()
+          tr.hide()
+      form.submit(cancel(subscription, tr))
+      form
+        
     tr = $('<tr valign="top">')
     td = $("<td id=subscription#{which_subscription}>")
     td.append(which_subscription)
     tr.append(td)
     td = $("<td>#{channel}</td>")
     tr.append(td)
-    form = $("<form id='cancel_subscribe'>")
-    button = $("<input type='submit' value='cancel' />")
-    form.append(button)
     td = $("<td>")
+    form = cancel_form(tr)
     td.append(form)
     tr.append(td)
-    cancel = (subscription, tr) ->
-      (evt) ->
-        evt.preventDefault()
-        subscription.cancel()
-        tr.hide()
-    form.submit(cancel(subscription, tr))
     $("#subscriptions table").prepend(tr)
 
   $('form#subscribe').submit(on_subcribe)
