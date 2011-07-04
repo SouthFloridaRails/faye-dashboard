@@ -2,28 +2,41 @@ activity_log = ->
   which_msg = 0
   show_message: (message, type, channel = null) ->
     which_msg += 1
-    tr = $('<tr valign="top">')
+    
+    log_row = ->
+      tr = $('<tr valign="top">')
+      $("table#log").prepend(tr)
+      tr
+    
+    show_channel = (channel) ->
+      td = $("<td>")
+      td.append(channel)
+      tr.append(td)
+
+    show_which_msg = ->
+      td = $("<td>(#{which_msg}) #{type}</td>")
+      tr.append(td)
+      
+    show_json = (message) ->
+      msg = JSON.stringify message, null, 4
+      td = $("<td><pre>#{msg}</pre></td>")
+      tr.append(td)
+
     parent_data = null
     if message.__parent_data__
         parent_data = message.__parent_data__
         message.__parent_data__ = undefined
         channel = parent_data.channel
+              
+    tr = log_row()
 
-    td = $("<td>")
-    td.append(channel)
-    tr.append(td)
-    # return if which_msg > 500
-    msg = JSON.stringify message, null, 4
-    td = $("<td>(#{which_msg}) #{type}</td>")
-    tr.append(td)
-    td = $("<td><pre>#{msg}</pre></td>")
-    tr.append(td)
+    show_channel(channel)
+    show_which_msg()
+      
+    show_json(message)
     if parent_data
-      msg = JSON.stringify parent_data, null, 4
-      td = $("<td><pre>#{msg}</pre></td>")
-      tr.append(td)
+      show_json(parent_data)
 
-    $("table#log").prepend(tr)
     which_msg
 
 set_up_subscribe_form = (client, activity_logger) ->

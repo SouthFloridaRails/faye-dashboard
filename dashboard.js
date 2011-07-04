@@ -5,32 +5,47 @@
     which_msg = 0;
     return {
       show_message: function(message, type, channel) {
-        var msg, parent_data, td, tr;
+        var log_row, parent_data, show_channel, show_json, show_which_msg, tr;
         if (channel == null) {
           channel = null;
         }
         which_msg += 1;
-        tr = $('<tr valign="top">');
+        log_row = function() {
+          var tr;
+          tr = $('<tr valign="top">');
+          $("table#log").prepend(tr);
+          return tr;
+        };
+        show_channel = function(channel) {
+          var td;
+          td = $("<td>");
+          td.append(channel);
+          return tr.append(td);
+        };
+        show_which_msg = function() {
+          var td;
+          td = $("<td>(" + which_msg + ") " + type + "</td>");
+          return tr.append(td);
+        };
+        show_json = function(message) {
+          var msg, td;
+          msg = JSON.stringify(message, null, 4);
+          td = $("<td><pre>" + msg + "</pre></td>");
+          return tr.append(td);
+        };
         parent_data = null;
         if (message.__parent_data__) {
           parent_data = message.__parent_data__;
           message.__parent_data__ = void 0;
           channel = parent_data.channel;
         }
-        td = $("<td>");
-        td.append(channel);
-        tr.append(td);
-        msg = JSON.stringify(message, null, 4);
-        td = $("<td>(" + which_msg + ") " + type + "</td>");
-        tr.append(td);
-        td = $("<td><pre>" + msg + "</pre></td>");
-        tr.append(td);
+        tr = log_row();
+        show_channel(channel);
+        show_which_msg();
+        show_json(message);
         if (parent_data) {
-          msg = JSON.stringify(parent_data, null, 4);
-          td = $("<td><pre>" + msg + "</pre></td>");
-          tr.append(td);
+          show_json(parent_data);
         }
-        $("table#log").prepend(tr);
         return which_msg;
       }
     };
