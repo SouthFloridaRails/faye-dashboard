@@ -7,12 +7,17 @@ FEATURES:
 
 INSTRUCTIONS:
 
-  1) Download the repository for this project (git clone).
+  1) Download the repository for this project (git@github.com:showell/faye-dashboard.git).
   2) Install Faye (and any dependencies).
   3) Modify dashboard.htm and dashboard.js so that they point to your Faye server.  (Look for "localhost" and "9292".)
   4) Start your Faye server.  If you don't have your own Faye server, then you can use server.js in this codebase.  Install node.js, then run "node server.js".  You may want to modify the port.
-  5) Open dashboard.htm in the browser.  To avoid strange AJAX-related issues in some versions of Firefox, I recommend serving them from your web server of choice.
-  6) The GUI should be mostly self-evident.  You can subscribe to channels and publish messages.  You'll then see activity in the log.
+  5) Set up a lightweight server like nginx to serve up dashboard.htm.  This avoids strange issues related to cross-domain security AJAX restrictions.
+  6) Open dashboard.htm in the browser via your localhost web server.
+  7) The GUI should be mostly self-evident.  You can subscribe to channels and publish messages.  You'll then see activity in the log.
 
 KNOWN ISSUES:
   1. Do not subscribe to "/**" or the "/meta/connect" channel.  This is more of an issue with Faye itself than the tool, and I believe there are plans to fix it soon in Faye.
+  2. The dashboard has very vanilla code to connect to Faye.  If things are not working as expected, the first thing to check for is cross-domain issues.  Nginx is your friend.
+
+PROJECT STATUS
+  I am no longer actively supporting this project, because it's basically done.  Once you get the configuration working, there's not much to it.  Feel free to open issues, and I will try to respond.  But mostly this project is here for the taking (and forking).  Hope you enjoy it!
