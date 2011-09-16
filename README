@@ -7,7 +7,7 @@ FEATURES:
 
 INSTRUCTIONS:
 
-  1) Download the repository for this project (git@github.com:showell/faye-dashboard.git).
+  1) Download the repository for this project. (git clone git://github.com/showell/faye-dashboard.git)
   2) Install Faye (and any dependencies).
   3) Modify dashboard.htm and dashboard.js so that they point to your Faye server.  (Look for "localhost" and "9292".)
   4) Start your Faye server.  If you don't have your own Faye server, then you can use server.js in this codebase.  Install node.js, then run "node server.js".  You may want to modify the port.
